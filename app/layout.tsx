@@ -30,10 +30,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="flex flex-row">
-          <div className="basis-1/4 border-2 border-black h-screen p-8">
+          <div className="basis-1/4 border-2 border-black h-screen p-10">
             <Sidebar />
           </div>
-          <div className="basis-3/4 border-2 border-black h-screen p-8">
+          <div className="basis-3/4 border-2 border-black h-screen py-8">
             {children}
           </div>
         </div>
