@@ -1,11 +1,12 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import PopulationChart from "@/components/chart"
+import PopulationChart from "@/components/home-chart"
 import {
   getAveragePopulationDensity,
   getWorldPopulation,
 } from "@/lib/worldbank"
+import HomeChart from "@/components/home-chart"
 
 interface WorldData {
   population: {
@@ -59,7 +60,7 @@ export default function Home() {
             ]}
           />
           <div className="flex basis-3/4">
-            <PopulationChart />
+            <HomeChart />
           </div>
         </div>
       </section>

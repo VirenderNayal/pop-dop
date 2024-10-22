@@ -7,7 +7,7 @@ import { getWorldPopulation } from "@/lib/worldbank"
 
 const YEAR_OPTIONS = [5, 10, 20, 50]
 
-export default function PopulationChart() {
+export default function HomeChart() {
   const [populationData, setPopulationData] = useState<{
     years: number[]
     population: number[]
@@ -81,7 +81,7 @@ export default function PopulationChart() {
         >
           {YEAR_OPTIONS.map((year) => (
             <option key={year} value={year}>
-              {year} Y
+              {year} yrs
             </option>
           ))}
         </select>

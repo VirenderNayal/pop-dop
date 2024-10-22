@@ -1,0 +1,20 @@
+table {
+  border-collapse: collapse;
+}
+td {
+  border-top: 1px solid #a0aec0; /* Inner borders */
+  border-left: 1px solid #a0aec0; /* Inner borders */
+}
+tr:first-child td {
+  border-top: none;
+}
+td:first-child {
+  border-left: none;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+td:last-child {
+  border-right: none;
+}
