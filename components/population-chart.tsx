@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Chart from "react-apexcharts"
+import dynamic from "next/dynamic"
 import { ApexOptions } from "apexcharts"
 import {
   getCountyPopulation,
@@ -13,34 +13,93 @@ import {
   getWorldPopulationDensity,
 } from "@/lib/worldbank"
 
-const YEAR_OPTIONS = [5, 10, 20, 50, 100]
-const CHART_OPTIONS = [
-  "Population",
-  "Population Density",
-  "Growth Rate",
-  "Life Exp. at birth",
-  "Birth Rate",
-  "Death Rate",
-  "Fertility Rate",
+const Chart = dynamic(() => import("react-apexcharts"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex justify-center items-center h-[400px]">
+      Loading chart...
+    </div>
+  ),
+})
+
+// Types
+type ChartDataType = {
+  xAxisData: string[]
+  yAxisData: number[]
+}
+
+type MetricOption = {
+  label: string
+  value: string
+  dataKey: keyof typeof dataFetchers
+  formatter?: (value: number) => number
+}
+
+// Constants
+const YEAR_OPTIONS = [5, 10, 20, 50, 100] as const
+const METRICS: MetricOption[] = [
+  {
+    label: "Population",
+    value: "population",
+    dataKey: "getCountyPopulation",
+    formatter: (value) => Math.round((value / 1_000_000_000) * 10) / 10,
+  },
+  {
+    label: "Population Density",
+    value: "density",
+    dataKey: "getWorldPopulationDensity",
+    formatter: (value) => Math.round(value * 100) / 100,
+  },
+  {
+    label: "Growth Rate",
+    value: "growthRate",
+    dataKey: "getWorldGrowthRate",
+    formatter: (value) => Math.round(value * 10) / 10,
+  },
+  {
+    label: "Life Exp. at birth",
+    value: "lifeExp",
+    dataKey: "getWorldLifeExp",
+    formatter: Math.floor,
+  },
+  {
+    label: "Birth Rate",
+    value: "birthRate",
+    dataKey: "getWorlBirthRate",
+    formatter: (value) => Math.round(value * 10) / 10,
+  },
+  {
+    label: "Death Rate",
+    value: "deathRate",
+    dataKey: "getWorldDeathRate",
+    formatter: (value) => Math.round(value * 10) / 10,
+  },
+  {
+    label: "Fertility Rate",
+    value: "fertilityRate",
+    dataKey: "getWorldFertilityRate",
+    formatter: (value) => Math.round(value * 10) / 10,
+  },
 ]
 
+// Data fetchers mapping
+const dataFetchers = {
+  getCountyPopulation,
+  getWorldPopulationDensity,
+  getWorlBirthRate,
+  getWorldDeathRate,
+  getWorldFertilityRate,
+  getWorldGrowthRate,
+  getWorldLifeExp,
+}
+
 export default function PopulationChart() {
-  const [chartData, setChartData] = useState<{
-    xAxisData: string[]
-    yAxisData: number[]
-  } | null>(null)
-  const [countryPopulation, setCountryPopulation] = useState<any>()
-  const [worldPopulationDensity, setWorldPopulationDensity] = useState<any>()
-  const [worldGrowthRate, setWorldGrowthRate] = useState<any>()
-  const [worldLifeExp, setWorldLifeExp] = useState<any>()
-  const [worldBirthRate, setWorldBirthRate] = useState<any>()
-  const [worldDeathRate, setWorldDeathRate] = useState<any>()
-  const [worldFertilityRate, setWorldFertilityRate] = useState<any>()
+  const [chartData, setChartData] = useState<ChartDataType | null>(null)
+  const [metricsData, setMetricsData] = useState<Record<string, any>>({})
+  const [yearRange, setYearRange] = useState<number>(5)
+  const [selectedMetric, setSelectedMetric] = useState<MetricOption>(METRICS[0])
 
-  const [yearRange, setYearRange] = useState(5)
-  const [chartOption, setChartOption] = useState("Population")
-
-  const options: ApexOptions = {
+  const chartOptions: ApexOptions = {
     chart: {
       type: "area",
       fontFamily: "Inter, sans-serif",
@@ -74,79 +133,46 @@ export default function PopulationChart() {
   const series = chartData
     ? [
         {
-          name: "Total Population",
-          data: chartData?.yAxisData.slice(0, yearRange).reverse(),
+          name: selectedMetric.label,
+          data: chartData.yAxisData.slice(0, yearRange).reverse(),
           color: "#cc00f4",
         },
       ]
     : []
 
+  // Fetch all data on component mount
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getCountyPopulation()
-        setCountryPopulation(data)
-      } catch (error) {
-        console.error("Error fetching world population:", error)
-      }
+    const fetchAllData = async () => {
+      const promises = METRICS.map(async (metric) => {
+        try {
+          const data = await dataFetchers[metric.dataKey]()
+          return [metric.value, data]
+        } catch (error) {
+          console.error(`Error fetching ${metric.label}:`, error)
+          return [metric.value, null]
+        }
+      })
 
-      try {
-        const data = await getWorldPopulationDensity()
-        setWorldPopulationDensity(data)
-      } catch (error) {
-        console.error("Error fetching world density:", error)
-      }
-
-      try {
-        const data = await getWorldGrowthRate()
-        setWorldGrowthRate(data)
-      } catch (error) {
-        console.error("Error fetching world growth rate:", error)
-      }
-
-      try {
-        const data = await getWorldLifeExp()
-        setWorldLifeExp(data)
-      } catch (error) {
-        console.error("Error fetching world life exp. :", error)
-      }
-
-      try {
-        const data = await getWorlBirthRate()
-        setWorldBirthRate(data)
-      } catch (error) {
-        console.error("Error fetching world birth rate :", error)
-      }
-
-      try {
-        const data = await getWorldDeathRate()
-        setWorldDeathRate(data)
-      } catch (error) {
-        console.error("Error fetching world death rate :", error)
-      }
-
-      try {
-        const data = await getWorldFertilityRate()
-        setWorldFertilityRate(data)
-      } catch (error) {
-        console.error("Error fetching world fertility rate :", error)
-      }
+      const results = await Promise.all(promises)
+      setMetricsData(Object.fromEntries(results))
     }
 
-    fetchData()
+    fetchAllData()
   }, [])
 
+  // Update chart data when metric or data changes
   useEffect(() => {
-    if (chartOption === "Population" && countryPopulation) {
+    if (!metricsData[selectedMetric.value]) return
+
+    if (selectedMetric.value === "population") {
       const years: string[] = []
       const population: number[] = []
 
+      const countryPopulation = metricsData[selectedMetric.value]
       for (const country in countryPopulation) {
         const countryData = countryPopulation[country]
-
-        countryData.years.forEach((year: string, index: string | number) => {
+        countryData.years.forEach((year: string, index: number) => {
           const value = countryData.population[index]
-
           const yearIndex = years.indexOf(year)
 
           if (yearIndex === -1) {
@@ -158,92 +184,42 @@ export default function PopulationChart() {
         })
       }
 
-      const populationInBillions = population.map(
-        (e) => Math.round((e / 1_000_000_000) * 10) / 10
-      )
-
       setChartData({
         xAxisData: years,
-        yAxisData: populationInBillions,
+        yAxisData: population.map(selectedMetric.formatter!),
       })
-    } else if (chartOption === "Population Density" && worldPopulationDensity) {
-      const densityRounded = worldPopulationDensity.density.map(
-        (e: number) => Math.round(e * 100) / 100
-      )
+    } else {
+      const data = metricsData[selectedMetric.value]
       setChartData({
-        xAxisData: worldPopulationDensity.years,
-        yAxisData: densityRounded,
-      })
-    } else if (chartOption === "Growth Rate" && worldGrowthRate) {
-      const growthRateRounded = worldGrowthRate.growthRate.map(
-        (e: number) => Math.round(e * 10) / 10
-      )
-      setChartData({
-        xAxisData: worldGrowthRate.years,
-        yAxisData: growthRateRounded,
-      })
-    } else if (chartOption === "Life Exp. at birth" && worldLifeExp) {
-      const lifeExpRounded = worldLifeExp.lifeExp.map((e: number) =>
-        Math.floor(e)
-      )
-      setChartData({
-        xAxisData: worldLifeExp.years,
-        yAxisData: lifeExpRounded,
-      })
-    } else if (chartOption === "Birth Rate" && worldBirthRate) {
-      const birthRateRounded = worldBirthRate.birthRate.map(
-        (e: number) => Math.round(e * 10) / 10
-      )
-      setChartData({
-        xAxisData: worldBirthRate.years,
-        yAxisData: birthRateRounded,
-      })
-    } else if (chartOption === "Death Rate" && worldDeathRate) {
-      const deathRateRounded = worldDeathRate.deathRate.map(
-        (e: number) => Math.round(e * 10) / 10
-      )
-      setChartData({
-        xAxisData: worldDeathRate.years,
-        yAxisData: deathRateRounded,
-      })
-    } else if (chartOption === "Fertility Rate" && worldFertilityRate) {
-      const fertilityRateRounded = worldFertilityRate.fertilityRate.map(
-        (e: number) => Math.round(e * 10) / 10
-      )
-      setChartData({
-        xAxisData: worldFertilityRate.years,
-        yAxisData: fertilityRateRounded,
+        xAxisData: data.years,
+        yAxisData: data[selectedMetric.value].map(selectedMetric.formatter!),
       })
     }
-  }, [
-    chartOption,
-    countryPopulation,
-    worldPopulationDensity,
-    worldGrowthRate,
-    worldBirthRate,
-    worldDeathRate,
-    worldFertilityRate,
-  ])
+  }, [selectedMetric, metricsData])
 
-  if (!chartData)
+  if (!chartData) {
     return (
       <div className="flex justify-center items-center h-screen">
         Loading...
       </div>
     )
+  }
 
   return (
-    <div className="w-full bg-gray-200">
+    <div className="w-full h-full bg-gray-200">
       <div className="flex justify-between w-full">
         <div className="flex justify-between mb-5">
           <select
-            value={chartOption}
-            onChange={(e) => setChartOption(e.target.value)}
+            value={selectedMetric.value}
+            onChange={(e) => {
+              const metric = METRICS.find((m) => m.value === e.target.value)!
+              setSelectedMetric(metric)
+            }}
             className="px-3 py-2 text-sm font-medium rounded-lg border border-gray-200 focus:outline-none"
           >
-            {CHART_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
+            {METRICS.map((metric) => (
+              <option key={metric.value} value={metric.value}>
+                {metric.label}
               </option>
             ))}
           </select>
@@ -262,7 +238,7 @@ export default function PopulationChart() {
           </select>
         </div>
       </div>
-      <Chart options={options} series={series} type="area" height="90%" />
+      <Chart options={chartOptions} series={series} type="area" height="90%" />
     </div>
   )
 }

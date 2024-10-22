@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import PopulationChart from "@/components/home-chart"
 import {
   getAveragePopulationDensity,
   getCurrLifeExp,

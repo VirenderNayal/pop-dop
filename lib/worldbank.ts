@@ -89,7 +89,7 @@ export async function getCurrLifeExp(): Promise<any> {
 
     return data.value === null ? "N/A" : Math.floor(Number(data[0].value))
   } catch (error) {
-    console.error("Error fetching population density data:", error)
+    console.error("Error fetching life exp. data:", error)
     throw error
   }
 }
@@ -147,7 +147,7 @@ export async function getCountyPopulation(): Promise<any> {
 export async function getWorldPopulationDensity() {
   try {
     const response = await axios.get(
-      `${baseUrl}/country/WLD/indicator/EN.POP.DNST?date=1960:2021&format=json&per_page=100&sort=date:desc`
+      `${baseUrl}/country/WLD/indicator/EN.POP.DNST?date=1961:2021&format=json&per_page=100&sort=date:desc`
     )
 
     const data = response.data[1]
@@ -170,7 +170,7 @@ export async function getWorldPopulationDensity() {
 export async function getWorldGrowthRate() {
   try {
     const response = await axios.get(
-      `${baseUrl}/country/WLD/indicator/SP.POP.GROW?date=1960:2023&format=json&per_page=100&sort=date:desc`
+      `${baseUrl}/country/WLD/indicator/SP.POP.GROW?date=1962:2023&format=json&per_page=100&sort=date:desc`
     )
 
     const data = response.data[1]
