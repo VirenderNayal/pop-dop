@@ -27,9 +27,8 @@ export default function HomeChart() {
       type: "gradient",
       gradient: {
         shadeIntensity: 1,
-        opacityFrom: 0.7,
-        opacityTo: 0.9,
-        stops: [0, 90, 100],
+        opacityFrom: 0.6,
+        opacityTo: 0.5,
       },
     },
     xaxis: {
@@ -51,7 +50,7 @@ export default function HomeChart() {
         {
           name: "Total Population",
           data: populationData.population.slice(0, yearRange).reverse(),
-          color: "#1A56DB",
+          color: "#cc00f4",
         },
       ]
     : []

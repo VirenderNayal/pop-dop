@@ -48,14 +48,13 @@ export default function PopulationChart() {
       background: "#e5e7eb",
     },
     dataLabels: { enabled: false },
-    stroke: { width: 1, curve: "straight" },
+    stroke: { width: 2, curve: "straight" },
     fill: {
       type: "gradient",
       gradient: {
         shadeIntensity: 1,
-        opacityFrom: 0.7,
-        opacityTo: 0.9,
-        stops: [0, 90, 100],
+        opacityFrom: 0.6,
+        opacityTo: 0.5,
       },
     },
     xaxis: {
@@ -77,7 +76,7 @@ export default function PopulationChart() {
         {
           name: "Total Population",
           data: chartData?.yAxisData.slice(0, yearRange).reverse(),
-          color: "#1A56DB",
+          color: "#cc00f4",
         },
       ]
     : []
@@ -138,7 +137,7 @@ export default function PopulationChart() {
   }, [])
 
   useEffect(() => {
-    if (chartOption === "Population") {
+    if (chartOption === "Population" && countryPopulation) {
       const years: string[] = []
       const population: number[] = []
 
@@ -167,24 +166,6 @@ export default function PopulationChart() {
         xAxisData: years,
         yAxisData: populationInBillions,
       })
-
-      //   check
-      options.tooltip = {
-        enabled: true,
-        shared: false,
-        custom: function () {
-          return `
-            <div class="flex p-4">
-              <p>2022</p>
-              <p>India: 2.2</p>
-              <p>Pakistan: X.X</p>
-              <p>China: Y.Y</p>
-              <p>Indonesia: Z.Z</p>
-              <p>XYZ: W.W</p>
-            </div>
-          `
-        },
-      }
     } else if (chartOption === "Population Density" && worldPopulationDensity) {
       const densityRounded = worldPopulationDensity.density.map(
         (e: number) => Math.round(e * 100) / 100

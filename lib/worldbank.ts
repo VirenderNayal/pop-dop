@@ -79,6 +79,41 @@ export async function getAveragePopulationDensity(): Promise<string | null> {
   }
 }
 
+export async function getCurrLifeExp(): Promise<any> {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/country/WLD/indicator/SP.DYN.LE00.IN?date=2022&format=json`
+    )
+
+    const data = response.data[1]
+
+    return data.value === null ? "N/A" : Math.floor(Number(data[0].value))
+  } catch (error) {
+    console.error("Error fetching population density data:", error)
+    throw error
+  }
+}
+
+export async function getPopulationChange(): Promise<any> {
+  try {
+    const responseCurr = await axios.get(
+      `${baseUrl}/country/WLD/indicator/SP.POP.TOTL?date=2023&format=json`
+    )
+
+    const responsePrev = await axios.get(
+      `${baseUrl}/country/WLD/indicator/SP.POP.TOTL?date=2022&format=json`
+    )
+
+    const dataCurr = responseCurr.data[1]
+    const dataPrev = responsePrev.data[1]
+
+    return ((dataCurr[0].value - dataPrev[0].value) / 1_000_000).toFixed(1)
+  } catch (error) {
+    console.error("Error fetching population change data:", error)
+    throw error
+  }
+}
+
 export async function getCountyPopulation(): Promise<any> {
   try {
     const response = await axios.get(
