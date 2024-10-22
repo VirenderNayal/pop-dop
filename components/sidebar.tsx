@@ -5,10 +5,9 @@ import { usePathname } from "next/navigation"
 export default function Sidebar() {
   const currentPath = usePathname()
 
-  console.log(currentPath)
   return (
     <div className="flex flex-col justify-start items-start bg-gray-200 rounded-3xl h-full py-12">
-      <div className="font-black text-5xl my-12 mx-auto">PopDop</div>
+      <div className="font-bold text-5xl my-12 mx-auto">PopDop</div>
       <Link
         href="/"
         className={`flex w-2/3 mx-auto my-1 py-3 pr-3 rounded-3xl ${
@@ -59,7 +58,7 @@ export default function Sidebar() {
         </div>
       </Link>
       <Link
-        href="/"
+        href="/about"
         className={`flex w-2/3 mx-auto my-1 py-3 pr-3 rounded-3xl ${
           currentPath === "/about" && "bg-gray-300"
         }`}

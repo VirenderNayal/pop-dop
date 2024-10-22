@@ -225,7 +225,12 @@ export default function PopulationChart() {
     worldFertilityRate,
   ])
 
-  if (!chartData) return <div>Loading...</div>
+  if (!chartData)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    )
 
   return (
     <div className="w-full bg-gray-200">

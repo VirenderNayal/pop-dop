@@ -68,7 +68,12 @@ export default function HomeChart() {
     fetchPopulation()
   }, [])
 
-  if (!populationData) return <div>Loading...</div>
+  if (!populationData)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    )
 
   return (
     <div className="w-full bg-gray-200 p-4 md:p-6">

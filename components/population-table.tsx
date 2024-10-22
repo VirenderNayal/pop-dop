@@ -26,7 +26,12 @@ export default function PopulationTable() {
     setIsLoading(false)
   }, [tableOptions])
 
-  if (isLoading || !tableData) return <h1>Loading...</h1>
+  if (isLoading || !tableData)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    )
 
   return (
     <div className="flex flex-col mt-5">
