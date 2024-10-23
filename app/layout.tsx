@@ -15,11 +15,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`antialiased`}>
-        <div className="flex flex-row">
-          <div className="basis-1/4 h-screen p-10">
+        <div className="flex 2xl:flex-row flex-col">
+          <div className="2xl:basis-1/4 basis-1/12 2xl:h-screen 2xl:p-10 p-2">
             <Sidebar />
           </div>
-          <div className="basis-3/4 h-screen py-8">{children}</div>
+          <div className="2xl:basis-3/4 basis-11/12 h-screen 2xl:py-8">
+            {children}
+          </div>
         </div>
       </body>
     </html>

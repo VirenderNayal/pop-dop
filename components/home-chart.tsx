@@ -154,7 +154,7 @@ export default function HomeChart() {
   const chartConfig = createChartConfig(data, yearRange)
 
   return (
-    <div className="w-full bg-gray-200 p-4 md:p-6 rounded-lg">
+    <div className="w-full bg-gray-200 py-2 md:py-6 rounded-lg">
       <div className="flex justify-between mb-5">
         <YearRangeSelector value={yearRange} onChange={setYearRange} />
       </div>

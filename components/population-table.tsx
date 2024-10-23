@@ -34,7 +34,7 @@ export default function PopulationTable() {
     )
 
   return (
-    <div className="flex flex-col mt-5">
+    <div className="flex flex-col mt-5 overflow-x-auto">
       <div className="flex justify-end w-full">
         <div className="flex justify-between mb-5">
           <select
@@ -50,7 +50,7 @@ export default function PopulationTable() {
           </select>
         </div>
       </div>
-      <table className="table-fixed w-full border-separate border-spacing-0">
+      <table className="table-fixed xl:w-full min-w-full border-separate border-spacing-0">
         <tbody>
           <tr className="font-bold">
             <td className="border border-gray-400 p-4 text-center">Country</td>

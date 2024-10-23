@@ -1,6 +1,7 @@
 "use client"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useEffect, useRef, useState } from "react"
 
 interface NavItem {
   path: string
@@ -98,7 +99,7 @@ const NavLink = ({ item, isActive }: NavLinkProps) => (
 
 const Logo = () => (
   <div
-    className="font-bold text-5xl my-12 mx-auto"
+    className="font-bold 2xl:text-5xl text-2xl 2xl:my-12 mx-auto"
     role="heading"
     aria-level={1}
   >
@@ -108,20 +109,94 @@ const Logo = () => (
 
 export default function Sidebar() {
   const currentPath = usePathname()
+  const [isSideBarOpen, setIsSideBarOpen] = useState<boolean>(false)
+  const ref = useRef<HTMLDivElement | null>(null)
+
+  const toggleSidebar = () => {
+    setIsSideBarOpen((prev) => !prev)
+  }
+
+  const handleClickOutside = (event: { target: any }) => {
+    if (ref.current && !ref.current.contains(event.target)) {
+      setIsSideBarOpen(false)
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside)
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
 
   return (
-    <nav
-      className="flex flex-col justify-start items-start bg-gray-200 rounded-3xl h-full py-12"
-      aria-label="Main navigation"
-    >
-      <Logo />
-      {NAV_ITEMS.map((item) => (
-        <NavLink
-          key={item.path}
-          item={item}
-          isActive={currentPath === item.path}
-        />
-      ))}
-    </nav>
+    <>
+      <nav className="2xl:hidden p-3">
+        <div className="h-full flex">
+          {isSideBarOpen ? (
+            <div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18 18 6M6 6l12 12"
+                />
+              </svg>
+            </div>
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="size-6"
+              onClick={toggleSidebar}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+              />
+            </svg>
+          )}
+          <Logo />
+        </div>
+      </nav>
+      <nav
+        className="hidden 2xl:flex flex-col justify-start items-start bg-gray-200 rounded-3xl h-full py-12"
+        aria-label="Main navigation"
+      >
+        <Logo />
+        {NAV_ITEMS.map((item) => (
+          <NavLink
+            key={item.path}
+            item={item}
+            isActive={currentPath === item.path}
+          />
+        ))}
+      </nav>
+      {isSideBarOpen && (
+        <div
+          ref={ref}
+          onBlur={toggleSidebar}
+          className="fixed top-14 bg-white left-0 z-40 h-screen transition-transform 2xl:-translate-x-full translate-x-0 xl:w-2/6 md:w-2/5 sm:w-1/2 w-full pt-20"
+        >
+          {NAV_ITEMS.map((item) => (
+            <div key={item.path} onClick={toggleSidebar}>
+              <NavLink item={item} isActive={currentPath === item.path} />
+            </div>
+          ))}
+        </div>
+      )}
+    </>
   )
 }
